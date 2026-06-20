@@ -8,6 +8,7 @@ interface ProductState {
   error: string | null;
   minComboSize: number;
   maxComboSize: number;
+  sortBy: 'totalProfit' | 'profitMargin' | 'totalCost';
   addProduct: (product: Omit<Product, 'id'>) => void;
   removeProduct: (id: string) => void;
   updateProduct: (id: string, field: keyof Product, value: string | number) => void;
@@ -15,6 +16,7 @@ interface ProductState {
   setCalculating: (isCalculating: boolean) => void;
   setError: (error: string | null) => void;
   setComboSize: (min: number, max: number) => void;
+  setSortBy: (sortBy: 'totalProfit' | 'profitMargin' | 'totalCost') => void;
   reset: () => void;
 }
 
@@ -35,6 +37,7 @@ export const useProductStore = create<ProductState>((set) => ({
   error: null,
   minComboSize: 2,
   maxComboSize: 4,
+  sortBy: 'totalProfit',
 
   addProduct: (product) =>
     set((state) => ({
@@ -62,6 +65,7 @@ export const useProductStore = create<ProductState>((set) => ({
   setCalculating: (isCalculating) => set({ isCalculating }),
   setError: (error) => set({ error }),
   setComboSize: (min, max) => set({ minComboSize: min, maxComboSize: max }),
+  setSortBy: (sortBy) => set({ sortBy }),
 
   reset: () =>
     set({
@@ -69,5 +73,6 @@ export const useProductStore = create<ProductState>((set) => ({
       result: null,
       isCalculating: false,
       error: null,
+      sortBy: 'totalProfit',
     }),
 }));

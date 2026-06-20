@@ -1,4 +1,5 @@
 import { TrendingUp, TrendingDown, AlertCircle } from 'lucide-react';
+import { useMemo } from 'react';
 import type { Combination } from '../../shared/types';
 import { useProductStore } from '../store/productStore';
 
@@ -46,8 +47,22 @@ interface ProfitTableProps {
 }
 
 export function ProfitTable({ type, combinations }: ProfitTableProps) {
-  const { isCalculating } = useProductStore();
+  const { isCalculating, sortBy } = useProductStore();
   const isHigh = type === 'high';
+
+  const sortedCombinations = useMemo(() => {
+    const list = [...combinations];
+    list.sort((a, b) => {
+      if (sortBy === 'totalProfit') {
+        return isHigh ? b.totalProfit - a.totalProfit : a.totalProfit - b.totalProfit;
+      } else if (sortBy === 'profitMargin') {
+        return isHigh ? b.profitMargin - a.profitMargin : a.profitMargin - b.profitMargin;
+      } else {
+        return isHigh ? b.totalCost - a.totalCost : a.totalCost - b.totalCost;
+      }
+    });
+    return list;
+  }, [combinations, sortBy, isHigh]);
 
   const config = {
     icon: isHigh ? TrendingUp : TrendingDown,
@@ -108,7 +123,7 @@ export function ProfitTable({ type, combinations }: ProfitTableProps) {
             <p className="text-xs opacity-80 mt-0.5">{config.subtitle}</p>
           </div>
           <span className={`px-3 py-1 rounded-full text-xs font-semibold ${config.badge}`}>
-            {combinations.length} 套组合
+            {sortedCombinations.length} 套组合
           </span>
         </div>
       </div>
@@ -126,7 +141,7 @@ export function ProfitTable({ type, combinations }: ProfitTableProps) {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {combinations.map((combo, index) => (
+            {sortedCombinations.map((combo, index) => (
               <tr
                 key={combo.id}
                 className={`transition-colors duration-200 ${config.rowHover} ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Brain, Zap, AlertTriangle } from 'lucide-react';
+import { Brain, Zap, AlertTriangle, ArrowUpDown } from 'lucide-react';
 import { ProductForm } from '../components/ProductForm';
 import { ControlPanel } from '../components/ControlPanel';
 import { ProfitTable } from '../components/ProfitTable';
@@ -7,7 +7,7 @@ import { useProductStore } from '../store/productStore';
 import { useCalculation } from '../hooks/useCalculation';
 
 export default function Home() {
-  const { result, error, isCalculating } = useProductStore();
+  const { result, error, isCalculating, sortBy, setSortBy } = useProductStore();
   const { calculate } = useCalculation();
 
   useEffect(() => {
@@ -16,6 +16,12 @@ export default function Home() {
     }, 500);
     return () => clearTimeout(timer);
   }, [calculate]);
+
+  const sortOptions = [
+    { value: 'totalProfit', label: '综合收益' },
+    { value: 'profitMargin', label: '毛利率' },
+    { value: 'totalCost', label: '总成本' },
+  ] as const;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-accent-50">
@@ -65,6 +71,25 @@ export default function Home() {
           </div>
 
           <div className="xl:col-span-7 space-y-8">
+            <div className="flex items-center justify-between animate-fade-in-up" style={{ animationDelay: '0.05s' }}>
+              <h2 className="text-base font-semibold text-primary-800">收益组合列表</h2>
+              <div className="flex items-center gap-2">
+                <ArrowUpDown className="w-4 h-4 text-gray-500" />
+                <span className="text-sm text-gray-500">排序方式：</span>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                  className="px-3 py-1.5 border border-gray-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none cursor-pointer"
+                >
+                  {sortOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
             <div className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
               <ProfitTable
                 type="high"

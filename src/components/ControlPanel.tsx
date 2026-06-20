@@ -5,19 +5,25 @@ import { useCalculation } from '../hooks/useCalculation';
 export function ControlPanel() {
   const { minComboSize, maxComboSize, setComboSize, reset, isCalculating, result } =
     useProductStore();
-  const { calculate } = useCalculation();
+  const { calculate, realtimeCalculate } = useCalculation();
 
   const handleMinChange = (value: number) => {
     if (value <= maxComboSize && value >= 2) {
       setComboSize(value, maxComboSize);
+      realtimeCalculate();
     }
   };
 
   const handleMaxChange = (value: number) => {
     if (value >= minComboSize && value <= 10) {
       setComboSize(minComboSize, value);
+      realtimeCalculate();
     }
   };
+
+  const displayedHighCount = result?.highProfit.length ?? 0;
+  const displayedLowCount = result?.lowProfit.length ?? 0;
+  const displayedTotalCount = displayedHighCount + displayedLowCount;
 
   return (
     <div className="bg-gradient-to-r from-primary-700 to-primary-800 rounded-2xl p-6 text-white shadow-xl">
@@ -87,19 +93,19 @@ export function ControlPanel() {
         <div className="mt-4 pt-4 border-t border-primary-600/50 grid grid-cols-3 gap-4 text-center">
           <div>
             <div className="text-2xl font-bold text-accent-300">
-              {result.totalCombinations}
+              {displayedTotalCount}
             </div>
             <div className="text-xs text-primary-200">总组合数</div>
           </div>
           <div>
             <div className="text-2xl font-bold text-green-300">
-              {result.highProfit.length}
+              {displayedHighCount}
             </div>
             <div className="text-xs text-primary-200">高收益组合</div>
           </div>
           <div>
             <div className="text-2xl font-bold text-gray-300">
-              {result.lowProfit.length}
+              {displayedLowCount}
             </div>
             <div className="text-xs text-primary-200">低收益组合</div>
           </div>
