@@ -52,7 +52,7 @@ export function ProfitTable({ type, combinations }: ProfitTableProps) {
   const config = {
     icon: isHigh ? TrendingUp : TrendingDown,
     title: isHigh ? '高收益组合' : '低收益组合',
-    subtitle: isHigh ? '毛利率 ≥ 35% 或 综合收益 ≥ 10元' : '毛利率 < 35% 且 综合收益 < 10元',
+    subtitle: isHigh ? '毛利率 ≥ 35% 且 综合收益 ≥ 10元' : '毛利率 < 35% 或 综合收益 < 10元',
     headerBg: isHigh ? 'bg-gradient-to-r from-accent-500 to-accent-600' : 'bg-gradient-to-r from-gray-500 to-gray-600',
     rowHover: isHigh ? 'hover:bg-accent-50' : 'hover:bg-gray-50',
     badge: isHigh ? 'bg-accent-100 text-accent-700' : 'bg-gray-100 text-gray-600',

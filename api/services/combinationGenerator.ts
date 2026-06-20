@@ -1,5 +1,26 @@
 import type { Product, Combination } from '../../shared/types.js';
 
+export function validateProducts(products: Product[]): string | null {
+  if (!products || !Array.isArray(products) || products.length === 0) {
+    return '请至少输入一个商品';
+  }
+  for (const product of products) {
+    if (!product.name || product.name.trim() === '') {
+      return '商品名称不能为空';
+    }
+    if (typeof product.cost !== 'number' || product.cost < 0) {
+      return `商品 ${product.name} 的成本价必须为非负数`;
+    }
+    if (typeof product.price !== 'number' || product.price <= 0) {
+      return `商品 ${product.name} 的售价必须大于0`;
+    }
+    if (product.price <= product.cost) {
+      return `商品 ${product.name} 的售价必须大于成本价`;
+    }
+  }
+  return null;
+}
+
 function generateCombinations(products: Product[], minSize: number, maxSize: number): Product[][] {
   const result: Product[][] = [];
   const n = products.length;
@@ -40,7 +61,7 @@ function calculateCombinationMetrics(products: Product[]): Omit<Combination, 'id
 }
 
 function isHighProfit(metrics: { totalProfit: number; profitMargin: number }): boolean {
-  return metrics.profitMargin >= 35 || metrics.totalProfit >= 10;
+  return metrics.profitMargin >= 35 && metrics.totalProfit >= 10;
 }
 
 function filterTopCombinations(

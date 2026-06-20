@@ -4,7 +4,7 @@
 import { WebSocketServer, type WebSocket } from 'ws';
 import app from './app.js';
 import type { CalculateRequest, CalculationResult } from '../shared/types.js';
-import { generateAndCalculate } from './services/combinationGenerator.js';
+import { generateAndCalculate, validateProducts } from './services/combinationGenerator.js';
 
 /**
  * start server with port
@@ -46,6 +46,15 @@ wss.on('connection', (ws: ExtendedWebSocket) => {
           ws.send(JSON.stringify({
             type: 'error',
             payload: { message: '请至少输入2个商品才能计算组合' },
+          }));
+          return;
+        }
+
+        const validationError = validateProducts(products);
+        if (validationError) {
+          ws.send(JSON.stringify({
+            type: 'error',
+            payload: { message: validationError },
           }));
           return;
         }

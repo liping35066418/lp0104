@@ -2,6 +2,24 @@ import { useCallback, useEffect, useRef } from 'react';
 import type { CalculationResult, Product } from '../../shared/types';
 import { useProductStore } from '../store/productStore';
 
+function validateProducts(products: Product[]): string | null {
+  for (const product of products) {
+    if (!product.name || product.name.trim() === '') {
+      return '商品名称不能为空';
+    }
+    if (typeof product.cost !== 'number' || product.cost < 0) {
+      return `商品 ${product.name} 的成本价必须为非负数`;
+    }
+    if (typeof product.price !== 'number' || product.price <= 0) {
+      return `商品 ${product.name} 的售价必须大于0`;
+    }
+    if (product.price <= product.cost) {
+      return `商品 ${product.name} 的售价必须大于成本价`;
+    }
+  }
+  return null;
+}
+
 export function useCalculation() {
   const {
     products,
@@ -93,11 +111,22 @@ export function useCalculation() {
       setError(`请至少输入 ${minComboSize} 个商品才能计算组合`);
       return;
     }
+    const validationError = validateProducts(products);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
     sendCalculation(products, minComboSize, maxComboSize);
   }, [products, minComboSize, maxComboSize, sendCalculation, setError]);
 
   const realtimeCalculate = useCallback(() => {
     if (products.length < minComboSize) {
+      return;
+    }
+
+    const validationError = validateProducts(products);
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
@@ -108,7 +137,7 @@ export function useCalculation() {
     debounceRef.current = setTimeout(() => {
       sendCalculation(products, minComboSize, maxComboSize);
     }, 500);
-  }, [products, minComboSize, maxComboSize, sendCalculation]);
+  }, [products, minComboSize, maxComboSize, sendCalculation, setError]);
 
   useEffect(() => {
     connectWebSocket();
